@@ -170,8 +170,8 @@ This is an initial draft of a CloudFormation template style guide. The intent is
         !Sub |
           #!/bin/bash -xe
           yum update -y aws-cfn-bootstrap
-          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${Ref: AWS::Region}
-          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource EC2Instance --region ${Ref: AWS::Region}
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region}
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region}
     ```
 
     ```yaml
