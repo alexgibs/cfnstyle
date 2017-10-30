@@ -179,7 +179,7 @@ This is an initial draft of a CloudFormation template style guide. The intent is
     NotificationARN: { "Fn::Join": [ ":", [ "arn:aws:sns", { "Ref": "AWS::Region" },{ "Ref": "AWS::AccountId" }, "MySNSTopic" ] ] }
 
     # good
-    NotificationARN: !Sub: arn:aws:sns${AWS::Region}:${AWS::AccountId}:MySNSTopic
+    NotificationARN: !Sub: arn:aws:sns:${AWS::Region}:${AWS::AccountId}:MySNSTopic
     ```
 
 ## Conditions
