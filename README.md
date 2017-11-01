@@ -4,7 +4,7 @@ This is an initial draft of a CloudFormation template style guide. The intent is
 
 ## Table of Contents
 
-  1. [Syntax](#syntax)
+  1. [Language](#language)
   1. [Comments](#comments)
   1. [Intrinsic Functions](#functions)
   1. [Conditions](#conditions)
@@ -13,10 +13,10 @@ This is an initial draft of a CloudFormation template style guide. The intent is
   1. [Outputs](#outputs)
   1. [Stack Architecture](#architecture)
 
-## Syntax
+## Language
 
-  <a name="syntax--yaml"></a><a name="1.1"></a>
-  - [1.1](#syntax--yaml) **YAML**: Use YAML for authoring templates, avoid JSON.
+  <a name="language--yaml"></a><a name="1.1"></a>
+  - [1.1](#language--yaml) **YAML**: Use YAML for authoring templates, avoid JSON.
 
     > Why?
 
@@ -25,6 +25,19 @@ This is an initial draft of a CloudFormation template style guide. The intent is
     + YAML avoids any bracket {} scoping issues associated with JSON.
 
     This guide is focused primarily on YAML syntax however some of the rules will also apply to JSON.
+
+  <a name="language--numbers"></a><a name="1.2"></a>
+  - [1.2](#language--numbers) Surround numbers starting with a zero in quotes.
+
+    > Why? YAML will treat numbers starting with a zero as octal.
+
+    ```yaml
+    # bad
+    AccountId: 012345678910
+
+    # good
+    AccountId: '012345678910'
+    ```
 
 ## Comments
 
