@@ -139,7 +139,7 @@ This is an initial draft of a CloudFormation template style guide. The intent is
   <a name="syntax--prefer-sub"></a><a name="3.2"></a>
   - [3.2](#references--prefer-sub) Use !Sub (Fn::Sub) instead of !Join (Fn::Join) where possible.
 
-    > Why? !Sub is much cleaner and easier to read. It is less error prone, particularly for UserData. !Sub allows for inline variable substitution, simiarly to ES2015 template literals.
+    > Why? !Sub is much cleaner and easier to read. It is less error prone, particularly for UserData. !Sub allows for inline variable substitution, similar to ES2015 template literals.
 
     ```yaml
     # bad
@@ -187,9 +187,9 @@ This is an initial draft of a CloudFormation template style guide. The intent is
 ## Parameters
 
   <a name="parameters--names"></a><a name="5.1"></a>
-  - [5.1](#parameters--names) A parameter value type (e.g. ARN, name, tag, phyical resource id), should be clear from the parameter name.
+  - [5.1](#parameters--names) A parameter value type (e.g. ARN, name, tag, physical resource id), should be clear from the parameter name.
 
-    > Why? When referencing a parameter from a resource in the template, it can become ambiguous what type of paramter value it contains.
+    > Why? When referencing a parameter from a resource in the template, it can become ambiguous what type of parameter value it contains.
 
     ```yaml
     # bad
@@ -207,14 +207,14 @@ This is an initial draft of a CloudFormation template style guide. The intent is
 
     # bad
     InfrastructurePipelineCfnStack:
-      Type: "AWS::CloudFormation::Stack"
+      Type: AWS::CloudFormation::Stack
       Properties:
         Parameters:
           ApprovalNotificationARN: !Ref CodePipelineSNSTopic
 
     # good
     InfrastructurePipelineCfnStack:
-      Type: "AWS::CloudFormation::Stack"
+      Type: AWS::CloudFormation::Stack
       Properties:
         Parameters:
           ApprovalNotificationARN: !Ref CodePipelineSNSTopicARN
@@ -225,9 +225,9 @@ This is an initial draft of a CloudFormation template style guide. The intent is
 ## Resources
 
   <a name="resources--logical-resource-id"></a><a name="6.1"></a>
-  - [6.1](#resources--logical-resource-id) Use descriptive logical resource names with the resouce type at the end.
+  - [6.1](#resources--logical-resource-id) Use descriptive logical resource names with the resource type at the end.
 
-    > Why? When referencing a resource elsewhere in the template, it makes it clear what type of resource you are referencing. Abiguity can lead to errors.
+    > Why? When referencing a resource elsewhere in the template, it makes it clear what type of resource you are referencing. Ambiguity can lead to errors.
 
     ```yaml
     # bad
@@ -244,11 +244,10 @@ This is an initial draft of a CloudFormation template style guide. The intent is
 
     ```
 
-  <a name="resources--physical-resource-id"></a><a name="6.1"></a>
-  - [6.1](#resources--physcial-resource-id) Avoid explicitly naming resources.
+  <a name="resources--physical-resource-id"></a><a name="6.2"></a>
+  - [6.2](#resources--physcial-resource-id) Avoid explicitly naming resources.
 
-    > Why? Explicitly naming resources complicates stack updates where this resource needs to be renamed. This is because CloudFormation will create the new resources first, before removing the old one. Avoid becoming attached to names, where possible.
-
+    > Why? Explicitly naming resources complicates stack updates where this resource needs to be replaced. This is because CloudFormation will create the new resources first, before removing the old one. Avoid becoming attached to names, where possible.
 
     ```yaml
 
@@ -272,7 +271,7 @@ This is an initial draft of a CloudFormation template style guide. The intent is
           ...
     ```
 
-    Note: There are some exceptions to this rule. There might be valid reasons for following a naming convention, or for knowing a resouce name up-front. Also to avoid ciruclar dependency issues within a template, a resource name may need to be specified (S3/Lambda for example).
+    Note: There are some exceptions to this rule. There might be valid reasons for following a naming convention, or for knowing a resource name up-front. Also to avoid circular dependency issues within a template, a resource name may need to be specified (S3/Lambda for example).
 
   <a name="resources--securitygroupvpc"></a><a name="6.3"></a>
   - [6.3](#resources--securitygroupvpc) Always be explicit when referencing security group IDs.
@@ -306,9 +305,9 @@ This is an initial draft of a CloudFormation template style guide. The intent is
     ```
 
   <a name="resources--no-redundant-dependency"></a><a name="6.4"></a>
-  - [6.4](#resources--no-redundant-dependency) Do not add explicity dependencies when an intrinsic dependency already exists.
+  - [6.4](#resources--no-redundant-dependency) Do not add explicitly dependencies when an intrinsic dependency already exists.
 
-    > Why? Cloudformation handles dependency ordering. Adding 'DependsOn' when a reference already exists is unessescary. It adds bloat to the template and can lead to confusion.
+    > Why? CloudFormation handles dependency ordering. Adding 'DependsOn' when a reference already exists is unnecessary. It adds bloat to the template and can lead to confusion.
 
     ```yaml
     # bad
@@ -334,19 +333,19 @@ This is an initial draft of a CloudFormation template style guide. The intent is
 ## Stack Architecture
 
   <a name="architecture--nesting"></a><a name="7.1"></a>
-  - [7.1](#architecture--nesting) Stacks should be nested when values need to be passed both ways between the parent and child stack.
+  - [7.1](#architecture--nesting) Nesting stacks should be avoided unless data needs to be passed both ways between the child and the parent stack.
 
-    > Why? CFN will honour dependency ordering when data is passed to a child stack via parameters and retrieved from the nested stack via Fn::GetAtt.
+    > Why? CloudFormation will honour dependency ordering when data is passed to a child stack via parameters and retrieved from the nested stack via Fn::GetAtt. This cannot be done with cross stack referencing.
 
   <a name="architecture--import-export"></a><a name="7.2"></a>
-  - [7.2](#architecture--import-export) Cross stack referencing via import/export values should be used when referencing data is only required in one direction.
+  - [7.2](#architecture--import-export) Cross stack referencing via import/export values should be used when referencing data is only required in one direction. Do not explicitly pass in a value created by one stack to another stack. E.g. Do not pass in the id of a security group created in Stack1 as a parameter to Stack2.
 
-    > Why? When referencing a value from one stack to another (and not visa-versa), import/export values should be preferred.
+    > Why? When referencing a value from one stack to another (and not visa-versa), import/export values should always be preferred. CloudFormation handles the dependency ordering for you.
 
   <a name="architecture--cofig-stack-pattern"></a><a name="7.2"></a>
-  - [7.2](#architecture--config-revealer-stack-pattern) The config revealer stack pattern involves a single stack used as a configuration source. This stack is used to export configuration values that will then be imported by other stacks. This is particularly useful for resource name values or other external configuration items.
+  - [7.2](#architecture--config-revealer-stack-pattern) The config revealer stack pattern involves a single stack used as a configuration source. This stack is used to export configuration values that will then be imported by other stacks. This is particularly useful for resource name values or other external configuration items. A single AWS::CloudFormation::WaitConditionHandle resource can be created as a dummy resource to allow the template to validate and the stack to create.
 
-    > Why? With large environments containing many stacks, it can become difficult to track where values are being set. Particularly when parameters are being passed down through multiple levels of nested stacks. Exporting these values from a single stack allows you to use the cloudformation.ListExports() api call to see all values in a single place. The cloudformation.ListImports() api call allows you to see where the exports have been imported.
+    > Why? With large environments containing many stacks, it can become difficult to track where values are being set, particularly when parameters are being passed down through multiple levels of nested stacks. Exporting these values from a single stack allows you to use the cloudformation.ListExports() api call to see all values in a single place. The cloudformation.ListImports() api call allows you to see where the exports have been imported.
 
 ## Attribution
 
