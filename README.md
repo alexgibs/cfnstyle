@@ -478,6 +478,8 @@ This is an initial draft of a CloudFormation template style guide. The intent is
     ##############
     # Template importing config-stack values:
     Parameters:
+      Environment:
+        Type: String
       BucketName:
         Type: String
 
@@ -485,9 +487,7 @@ This is an initial draft of a CloudFormation template style guide. The intent is
       S3Bucket:
         Type: AWS::S3::Bucket
         Properties:
-          BucketName:
-            Fn::ImportValue:
-              !Sub ${Environment}-${BucketName}
+          BucketName: !Join [ '-', [ 'Fn::ImportValue': !Sub '${Environment}-resource-prefix', !Ref BucketName ]]
     ```
 
 ## Attribution
